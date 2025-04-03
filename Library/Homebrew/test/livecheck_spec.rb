@@ -182,6 +182,31 @@ RSpec.describe Livecheck do
     end
   end
 
+  describe "#os" do
+    # NOTE: We use the same value for all oses to ensure it does not vary
+    # based on the test environment.
+    let(:c_os) do
+      Cask::Cask.new("c-os") do
+        os macos: "os", linux: "os"
+
+        version "0.0.1"
+
+        url "https://brew.sh/test-0.0.1.dmg"
+        name "Test"
+        desc "Test cask"
+        homepage "https://brew.sh"
+
+        livecheck do
+          url "https://brew.sh/#{os}"
+        end
+      end
+    end
+
+    it "delegates `os` in `livecheck` block to `package_or_resource`" do
+      expect(c_os.livecheck.url).to eq("https://brew.sh/os")
+    end
+  end
+
   describe "#to_hash" do
     it "returns a Hash of all instance variables" do
       expect(livecheck_f.to_hash).to eq(
